@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvyn — Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#00040e;--card:rgba(0,15,40,0.85);
+  --star:#dff0ff;--dim:#5a8ab0;--muted:#1e3a5a;
+  --accent:#1a90ff;--accent2:#00d4ff;--gold:#7dd4ff;
+  --border:rgba(26,144,255,0.18);--borderb:rgba(26,144,255,0.45);
+  --mono:'Space Mono',monospace;--display:'Syne',sans-serif;--body:'Inter',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;cursor:none !important;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--body);background:var(--void);color:var(--star);overflow-x:hidden;cursor:none;}
+
+/* ──────────────────────────────
+   LOADER
+────────────────────────────── */
+#loader{
+  position:fixed;inset:0;z-index:9000;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  transition:opacity .8s ease;
+}
+#loader.fade{opacity:0;pointer-events:none;}
+.ld-name{
+  font-family:var(--display);font-size:56px;font-weight:800;letter-spacing:-2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),#80f0ff,var(--accent));
+  background-size:250%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradshift 2s linear infinite;
+}
+.ld-bar-wrap{width:180px;height:1px;background:var(--muted);}
+.ld-bar{height:1px;background:linear-gradient(to right,var(--accent),var(--accent2));width:0;animation:loadfill 1.6s ease forwards;}
+.ld-txt{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;}
+@keyframes loadfill{to{width:100%;}}
+@keyframes gradshift{0%{background-position:0%}100%{background-position:250%;}}
+
+/* ──────────────────────────────
+   SCROLL PROGRESS
+────────────────────────────── */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(to right,var(--accent),var(--accent2));z-index:600;width:0%;pointer-events:none;}
+
+/* ──────────────────────────────
+   CURSOR
+────────────────────────────── */
+#cur{position:fixed;width:9px;height:9px;border-radius:50%;background:var(--accent2);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen;}
+#cur2{position:fixed;width:30px;height:30px;border-radius:50%;border:1px solid rgba(0,212,255,.38);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s;}
+
+/* ──────────────────────────────
+   STARFIELD
+────────────────────────────── */
+#sf{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ──────────────────────────────
+   NEBULA
+────────────────────────────── */
+.nbg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 65% 45% at 8% 8%,  rgba(0,55,160,.22) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 65% at 92% 82%, rgba(0,100,220,.14) 0%,transparent 65%),
+    radial-gradient(ellipse 45% 40% at 55% 50%, rgba(0,25,90,.2)   0%,transparent 70%),
+    var(--void);
+}
+
+/* ──────────────────────────────
+   NAV
+────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  padding:18px 0;
+  background:linear-gradient(to bottom,rgba(0,4,14,.93) 0%,transparent 100%);
+  backdrop-filter:blur(4px);
+}
+.nav-inner{display:flex;align-items:center;gap:16px;max-width:1100px;margin:0 auto;padding:0 24px;}
+.nav-logo{font-family:var(--mono);font-size:14px;color:var(--accent2);text-decoration:none;letter-spacing:2px;flex-shrink:0;margin-right:auto;}
+.nav-logo b{color:var(--dim);font-weight:400;}
+.nav-links{display:flex;gap:26px;list-style:none;}
+.nav-links a{
+  font-family:var(--mono);font-size:11px;color:var(--dim);
+  text-decoration:none;letter-spacing:1px;text-transform:uppercase;
+  transition:color .2s;position:relative;padding-bottom:3px;
+}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--accent2);transition:width .25s;}
+.nav-links a.active,.nav-links a:hover{color:var(--accent2);}
+.nav-links a.active::after,.nav-links a:hover::after{width:100%;}
+/* open to work */
+.otw{
+  display:flex;align-items:center;gap:7px;flex-shrink:0;
+  font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:1px;
+  border:1px solid rgba(0,212,255,.25);padding:5px 13px;border-radius:20px;
+  background:rgba(0,212,255,.05);white-space:nowrap;
+}
+.otw-dot{width:6px;height:6px;border-radius:50%;background:#00ff88;box-shadow:0 0 8px #00ff88;animation:pdot 1.6s infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.35);}}
+/* hamburger */
+.hbg{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:none;background:none;border:none;padding:16px 14px;flex-shrink:0;}
+.hbg span{width:22px;height:2px;background:var(--dim);display:block;transition:all .3s;pointer-events:none;border-radius:1px;}
+.hbg-overlay{position:absolute;inset:0;background:transparent;pointer-events:none;}
+.hbg.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.hbg.open span:nth-child(2){opacity:0;}
+.hbg.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+/* mobile menu */
+.mob{
+  display:none;position:fixed;top:57px;left:0;right:0;
+  background:rgba(0,4,14,.97);border-bottom:1px solid var(--muted);
+  padding:22px 24px;flex-direction:column;gap:20px;z-index:199;
+  backdrop-filter:blur(14px);
+}
+.mob.open{display:flex;}
+.mob a{font-family:var(--mono);font-size:13px;color:var(--dim);text-decoration:none;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
+.mob a:hover{color:var(--accent2);}
+.mob .otw{width:fit-content;}
+
+/* ──────────────────────────────
+   LAYOUT
+────────────────────────────── */
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px;}
+section{padding:120px 0;position:relative;}
+
+/* ──────────────────────────────
+   SECTION LABEL + TITLE
+────────────────────────────── */
+.sec-lbl{font-family:var(--mono);font-size:11px;color:var(--accent2);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sec-lbl::after{content:'';flex:1;max-width:56px;height:1px;background:var(--accent2);}
+.sec-title{font-family:var(--display);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1;letter-spacing:-1px;margin-bottom:60px;color:var(--star);}
+.sec-title em{color:var(--accent2);font-style:normal;}
+
+/* ──────────────────────────────
+   SECTION DIVIDER
+────────────────────────────── */
+.sdiv{position:relative;display:flex;align-items:center;justify-content:center;height:50px;z-index:1;}
+.sdiv::before{content:'';position:absolute;left:24px;right:24px;top:50%;height:1px;background:linear-gradient(to right,transparent,var(--muted),transparent);}
+.sdiv-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);box-shadow:0 0 10px var(--accent2);position:relative;z-index:1;}
+
+/* ──────────────────────────────
+   HERO
+────────────────────────────── */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent2);letter-spacing:3px;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:10px;min-height:18px;}
+.hero-eyebrow::before{content:'';width:26px;height:1px;background:var(--accent2);flex-shrink:0;}
+.hero-name{
+  font-family:var(--display);font-size:clamp(4rem,12vw,9rem);
+  font-weight:800;line-height:.9;letter-spacing:-3px;margin-bottom:8px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),#80f0ff,var(--accent));
+  background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradshift 5s linear infinite;
+  cursor:none;user-select:none;
+}
+.hero-subtitle{font-family:var(--mono);font-size:clamp(10px,1.8vw,13px);color:var(--dim);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;line-height:2;}
+.hero-subtitle .hl{color:var(--accent);}
+.hero-founder{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:36px;display:flex;align-items:center;gap:8px;}
+.hero-founder::before{content:'';width:18px;height:1px;background:var(--gold);}
+.hero-desc{max-width:500px;font-size:16px;line-height:1.85;color:rgba(223,240,255,.55);margin-bottom:44px;font-weight:300;}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px;}
+.since{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;border-top:1px solid var(--muted);padding-top:20px;margin-top:4px;}
+.since strong{color:var(--accent2);}
+
+/* buttons */
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 26px;border-radius:2px;cursor:none;transition:all .22s;display:inline-flex;align-items:center;gap:8px;}
+.btn-p{background:var(--accent);color:#fff;font-weight:700;}
+.btn-p:hover{background:#3aa5ff;transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,144,255,.35);}
+.btn-o{border:1px solid var(--muted);color:var(--dim);}
+.btn-o:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* orbit / avatar */
+.orbit-wrap{position:absolute;right:0;top:50%;transform:translateY(-55%);width:420px;height:420px;pointer-events:none;}
+.o1,.o2{position:absolute;top:50%;left:50%;border-radius:50%;}
+.o1{width:420px;height:420px;margin:-210px 0 0 -210px;border:1px solid rgba(26,144,255,.07);animation:ospin 42s linear infinite;}
+.o1::before{content:'';position:absolute;width:7px;height:7px;background:var(--accent2);border-radius:50%;top:10px;left:50%;margin-left:-3.5px;box-shadow:0 0 12px var(--accent2);}
+.o2{width:280px;height:280px;margin:-140px 0 0 -140px;border:1px solid rgba(0,212,255,.05);animation:ospin 26s linear infinite reverse;}
+.o2::before{content:'';position:absolute;width:4px;height:4px;background:var(--accent);border-radius:50%;bottom:14px;left:50%;margin-left:-2px;box-shadow:0 0 8px var(--accent);}
+@keyframes ospin{to{transform:rotate(360deg);}}
+.avatar{width:160px;height:160px;border-radius:50%;border:2px solid rgba(26,144,255,.4);object-fit:cover;object-position:center top;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);filter:grayscale(15%) brightness(.95);transition:filter .3s;box-shadow:0 0 40px rgba(0,150,255,.15);}
+.avatar:hover{filter:grayscale(0%) brightness(1);}
+
+/* ──────────────────────────────
+   ABOUT
+────────────────────────────── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.about-text p{font-size:15.5px;line-height:1.95;color:rgba(223,240,255,.6);margin-bottom:20px;font-weight:300;}
+.about-text p strong{color:var(--star);font-weight:500;}
+.about-text .founder-note{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:2px;border:1px solid rgba(125,212,255,.2);padding:12px 16px;border-radius:2px;background:rgba(125,212,255,.04);margin-top:8px;}
+.about-list{display:flex;flex-direction:column;gap:0;}
+.about-item{padding:15px 18px;border-bottom:1px solid rgba(26,144,255,.1);transition:all .22s;}
+.about-item:hover{background:rgba(26,144,255,.04);padding-left:26px;}
+.about-item-name{font-family:var(--mono);font-size:11px;color:var(--star);letter-spacing:1px;margin-bottom:3px;}
+.about-item-desc{font-size:13px;color:var(--dim);font-weight:300;}
+
+/* ──────────────────────────────
+   SKILLS — colored square flags
+────────────────────────────── */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+.sg{padding:24px;border:1px solid var(--border);border-radius:4px;background:var(--card);backdrop-filter:blur(10px);transition:border-color .25s,transform .25s;}
+.sg:hover{border-color:var(--borderb);transform:translateY(-4px);}
+.sg-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent2);margin-bottom:16px;}
+.tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:.5px;
+  padding:5px 10px;border-radius:2px;
+  background:rgba(26,144,255,.07);border:1px solid var(--border);
+  color:var(--dim);transition:all .18s;
+  display:inline-flex;align-items:center;gap:7px;cursor:default;
+}
+.tag:hover{background:rgba(26,144,255,.15);color:var(--star);border-color:var(--borderb);transform:translateY(-1px);}
+.tag.c{border-color:rgba(0,212,255,.2);background:rgba(0,212,255,.05);}
+.tag.c:hover{background:rgba(0,212,255,.13);color:var(--star);border-color:rgba(0,212,255,.5);}
+.tag.t{border-color:rgba(26,144,255,.15);background:rgba(26,144,255,.04);}
+.tag.t:hover{background:rgba(26,144,255,.12);color:var(--star);border-color:var(--borderb);}
+/* colored square flag */
+.fl{width:9px;height:9px;border-radius:1px;flex-shrink:0;display:inline-block;}
+.fl-py{background:#3572A5;}
+.fl-js{background:#f7df1e;}
+.fl-cpp{background:#00599C;}
+.fl-java{background:#b07219;}
+.fl-c{background:#555555;}
+.fl-kt{background:#A97BFF;}
+.fl-sql{background:#e38c00;}
+.fl-css{background:#264de4;}
+.fl-lua{background:#000080;}
+.fl-luau{background:#00A2FF;}
+.fl-html{background:#e34c26;}
+.fl-swift{background:#F05138;}
+.fl-flask{background:#000000;border:1px solid #333;}
+.fl-react{background:#61DAFB;}
+.fl-node{background:#339933;}
+.fl-django{background:#092E20;}
+.fl-tw{background:#38BDF8;}
+.fl-socket{background:#010101;border:1px solid #333;}
+.fl-jq{background:#0769AD;}
+.fl-sqlite{background:#003B57;}
+.fl-mysql{background:#4479A1;}
+.fl-mongo{background:#47A248;}
+.fl-fire{background:#FFCA28;}
+.fl-git{background:#F05032;}
+.fl-vsc{background:#007ACC;}
+.fl-docker{background:#2496ED;}
+.fl-linux{background:#FCC624;}
+.fl-nginx{background:#009900;}
+.fl-fig{background:#F24E1E;}
+.fl-cf{background:#F38020;}
+.fl-vercel{background:#000000;border:1px solid #333;}
+.fl-netlify{background:#00C7B7;}
+.fl-aws{background:#FF9900;}
+.fl-rly{background:#7553C0;}
+.fl-gh{background:#181717;border:1px solid #333;}
+.fl-cld{background:#3448C5;}
+.fl-ai{background:#412991;}
+.fl-dc{background:#5865F2;}
+.fl-rest{background:#009688;}
+.fl-rbx{background:#00A2FF;}
+
+/* ──────────────────────────────
+   CURRENTLY
+────────────────────────────── */
+.curr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.cc{padding:22px 24px;border:1px solid var(--border);border-radius:4px;background:var(--card);backdrop-filter:blur(10px);transition:all .25s;display:flex;gap:14px;align-items:flex-start;}
+.cc:hover{border-color:var(--borderb);transform:translateY(-3px);}
+.cc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.cc-dot.g{background:#00ff88;box-shadow:0 0 8px #00ff88;animation:pdot 1.6s infinite;}
+.cc-dot.b{background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:pdot 2s infinite;}
+.cc-dot.y{background:#ffd060;box-shadow:0 0 8px #ffd060;animation:pdot 1.8s infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.35);}}
+.cc-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:5px;}
+.cc-txt{font-size:14px;color:var(--star);line-height:1.6;font-weight:400;}
+.cc-sub{font-size:12px;color:var(--dim);margin-top:5px;font-style:italic;font-weight:300;line-height:1.5;}
+
+/* ──────────────────────────────
+   PROJECTS
+────────────────────────────── */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
+.pc{
+  border:1px solid var(--border);border-radius:4px;padding:32px;
+  background:var(--card);backdrop-filter:blur(10px);
+  transition:all .3s;position:relative;overflow:hidden;
+  text-decoration:none;color:inherit;display:block;cursor:none;
+}
+.pc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,144,255,.06) 0%,transparent 60%);opacity:0;transition:opacity .3s;}
+.pc:hover{border-color:var(--borderb);transform:translateY(-6px);box-shadow:0 14px 40px rgba(0,100,255,.1);}
+.pc:hover::before{opacity:1;}
+.pc-num{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:20px;}
+.pc-name{font-family:var(--display);font-size:22px;font-weight:700;color:var(--star);margin-bottom:12px;letter-spacing:-.3px;}
+.pc-desc{font-size:14px;line-height:1.75;color:rgba(223,240,255,.5);margin-bottom:22px;font-weight:300;}
+.pc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;}
+.pc-link{font-family:var(--mono);font-size:11px;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;text-decoration:none;transition:gap .2s;}
+.pc:hover .pc-link{gap:10px;}
+.pc.featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.pc.featured .pc-name{font-size:32px;}
+.pc-badge{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(125,212,255,.3);padding:4px 10px;border-radius:2px;display:inline-block;margin-bottom:16px;}
+.code-block{font-family:var(--mono);font-size:11px;line-height:2.2;color:rgba(90,138,176,.5);padding:22px;background:rgba(0,15,40,.65);border:1px solid var(--border);transition:all .3s;}
+.pc:hover .code-block{box-shadow:inset 0 0 30px rgba(0,100,255,.05);}
+.kw{color:rgba(0,212,255,.62);}.fn{color:rgba(125,200,255,.62);}.st{color:rgba(0,160,255,.62);}
+
+/* ──────────────────────────────
+   WHY ME
+────────────────────────────── */
+.wm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--muted);border:1px solid var(--muted);}
+.wm{background:var(--void);padding:36px 28px;transition:background .25s;}
+.wm:hover{background:rgba(26,144,255,.04);}
+.wm-num{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:20px;}
+.wm-title{font-family:var(--display);font-size:22px;font-weight:700;color:var(--star);margin-bottom:14px;letter-spacing:-.3px;}
+.wm-title em{color:var(--accent2);font-style:normal;}
+.wm-desc{font-size:14px;line-height:1.8;color:rgba(223,240,255,.5);font-weight:300;}
+.wm-stat{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--accent2);margin-top:22px;letter-spacing:-1px;}
+.wm-stat span{font-size:11px;color:var(--dim);letter-spacing:2px;display:block;margin-top:4px;}
+
+/* ──────────────────────────────
+   CONTACT
+────────────────────────────── */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.contact-big{font-family:var(--display);font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;line-height:1;letter-spacing:-2px;margin-bottom:24px;}
+.contact-big em{color:var(--accent2);font-style:normal;}
+.contact-p{font-size:15px;line-height:1.85;color:rgba(223,240,255,.5);margin-bottom:40px;font-weight:300;}
+.clinks{display:flex;flex-direction:column;border:1px solid var(--muted);}
+.cl{display:flex;align-items:center;gap:16px;padding:20px 22px;border-bottom:1px solid rgba(26,144,255,.1);text-decoration:none;color:var(--star);background:var(--void);transition:all .25s;cursor:none;}
+.cl:last-child{border-bottom:none;}
+.cl:hover{background:rgba(26,144,255,.05);padding-left:28px;}
+.cl-ico{font-family:var(--mono);font-size:11px;width:36px;height:36px;border:1px solid var(--muted);display:flex;align-items:center;justify-content:center;color:var(--dim);flex-shrink:0;transition:all .2s;}
+.cl:hover .cl-ico{border-color:var(--accent2);color:var(--accent2);}
+.cl-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:3px;}
+.cl-val{font-size:14px;color:var(--dim);}
+.cl-arr{margin-left:auto;color:var(--muted);transition:color .2s,transform .2s;}
+.cl:hover .cl-arr{color:var(--accent2);transform:translateX(4px);}
+
+/* copy toast */
+#toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);
+  background:rgba(0,15,40,.96);border:1px solid var(--borderb);
+  color:var(--accent2);font-family:var(--mono);font-size:11px;
+  letter-spacing:2px;padding:10px 20px;border-radius:2px;
+  opacity:0;transition:all .3s;pointer-events:none;z-index:800;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ──────────────────────────────
+   FOOTER
+────────────────────────────── */
+footer{padding:36px 0;border-top:1px solid rgba(26,144,255,.08);position:relative;z-index:1;}
+.foot-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+footer p,footer span.foot-r{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
+footer span.hi{color:var(--accent2);}
+.foot-r{font-style:italic;}
+
+/* ──────────────────────────────
+   BACK TO TOP
+────────────────────────────── */
+#btt{
+  position:fixed;bottom:28px;right:28px;width:40px;height:40px;
+  background:rgba(0,15,40,.92);border:1px solid var(--borderb);
+  color:var(--accent2);font-size:16px;border-radius:2px;cursor:none;
+  z-index:500;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:all .3s;
+  box-shadow:0 4px 20px rgba(0,100,255,.2);
+}
+#btt.show{opacity:1;pointer-events:all;}
+#btt:hover{background:rgba(26,144,255,.15);transform:translateY(-3px);}
+
+/* ──────────────────────────────
+   SCROLL LINE
+────────────────────────────── */
+.sline{position:fixed;left:22px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:50;}
+.sline-bar{width:1px;height:70px;background:linear-gradient(to bottom,transparent,var(--muted));}
+.sline-txt{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);}
+
+/* ──────────────────────────────
+   CONSTELLATION EASTER EGG
+────────────────────────────── */
+#cegg{position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:0;transition:opacity .9s;background:rgba(0,4,14,.92);}
+#cegg.show{opacity:1;pointer-events:all;}
+#ccanvas{position:absolute;inset:0;width:100%;height:100%;}
+.cegg-quote{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);text-align:center;opacity:0;transition:opacity 1s .6s;pointer-events:none;max-width:620px;padding:0 24px;}
+#cegg.show-q .cegg-quote{opacity:1;}
+.cq{font-family:var(--display);font-size:clamp(1.2rem,3vw,1.9rem);font-style:italic;color:rgba(223,240,255,.82);line-height:1.6;margin-bottom:14px;}
+.cqa{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;}
+.cegg-close{position:absolute;top:28px;right:28px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:2px;cursor:pointer;pointer-events:all;border:1px solid var(--muted);padding:8px 14px;border-radius:2px;transition:all .2s;}
+.cegg-close:hover{color:var(--accent2);border-color:var(--borderb);}
+.cegg-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translateY(180px);font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-align:center;pointer-events:none;opacity:0;transition:opacity .5s .5s;}
+#cegg.show .cegg-hint{opacity:1;}
+#cegg.show-q .cegg-hint{opacity:0;}
+
+/* ──────────────────────────────
+   REVEAL
+────────────────────────────── */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .75s ease,transform .75s ease;}
+.rv.vis{opacity:1;transform:translateY(0);}
+
+/* ──────────────────────────────
+   RESPONSIVE
+────────────────────────────── */
+@media(max-width:900px){
+  .about-grid{grid-template-columns:1fr;gap:40px;}
+  .contact-grid{grid-template-columns:1fr;gap:40px;}
+  .orbit-wrap{display:none;}
+  .sline{display:none;}
+  nav .nav-links{display:none;}
+  .otw{display:none;}
+  .hbg{display:flex;}
+  .pc.featured{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .proj-grid,.skills-grid,.wm-grid,.curr-grid{grid-template-columns:1fr;}
+  .wm-grid{background:none;border:none;gap:12px;}
+  .wm{border:1px solid var(--border);}
+  .hero-name{letter-spacing:-2px;}
+}
+
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher{
+  display:flex;align-items:center;gap:0;
+  flex-shrink:0;overflow:hidden;
+  border:1px solid var(--muted);
+}
+.lang-btn{
+  font-family:var(--mono);font-size:11px;letter-spacing:1px;
+  text-transform:uppercase;color:var(--dim);
+  background:transparent;
+  border-right:1px solid var(--muted);
+  padding:5px 8px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;cursor:none !important;
+  transition:color .2s,background .2s;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  user-select:none;
+  line-height:1;
+}
+.lang-btn:last-child{border-right:none;}
+.lang-btn:hover{color:var(--accent2);background:rgba(0,212,255,.08);}
+.lang-btn.active{color:var(--accent2);background:rgba(0,212,255,.1);}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-name">Zelvyn</div>
+  <div class="ld-bar-wrap"><div class="ld-bar"></div></div>
+  <div class="ld-txt" id="ldTxt">Initializing...</div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div id="progress"></div>
+
+<!-- CURSOR -->
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- STARFIELD -->
+<canvas id="sf"></canvas>
+<div class="nbg"></div>
+
+<!-- CONSTELLATION -->
+<div id="cegg">
+  <canvas id="ccanvas"></canvas>
+  <div class="cegg-hint">Click anywhere to reveal</div>
+  <div class="cegg-quote">
+    <div class="cq">"We are the cosmos made conscious &mdash; the universe experiencing itself, asking why it exists, building things in the dark, and calling that meaning."</div>
+    <div class="cqa">&mdash; Zelvyn &nbsp;&middot;&nbsp; 2026</div>
+  </div>
+  <div class="cegg-close" onclick="closeEgg()">Close [ESC]</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">Email copied to clipboard</div>
+
+<!-- BACK TO TOP -->
+<button id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">ZLV<b> // dev</b></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about"     data-s="about" data-i18n="nav_about">About</a></li>
+      <li><a href="#skills"    data-s="skills" data-i18n="nav_skills">Skills</a></li>
+      <li><a href="#currently" data-s="currently" data-i18n="nav_now">Now</a></li>
+      <li><a href="#projects"  data-s="projects" data-i18n="nav_projects">Projects</a></li>
+      <li><a href="#whyme"     data-s="whyme" data-i18n="nav_whyme">Why Me</a></li>
+      <li><a href="#contact"   data-s="contact" data-i18n="nav_contact">Contact</a></li>
+    </ul>
+    <div class="otw"><span class="otw-dot"></span><span data-i18n="otw">Open to Commissions</span></div>
+    <div class="lang-switcher" id="langSwitcher">
+      <div class="lang-btn active" onclick="setLang('en')">EN</div>
+      <div class="lang-btn" onclick="setLang('is')">IS</div>
+      <div class="lang-btn" onclick="setLang('es')">ES</div>
+    </div>
+    <button class="hbg" id="hbg" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob" id="mob">
+  <a href="#about"     onclick="toggleMenu()">About</a>
+  <a href="#skills"    onclick="toggleMenu()">Skills</a>
+  <a href="#currently" onclick="toggleMenu()">Now</a>
+  <a href="#projects"  onclick="toggleMenu()">Projects</a>
+  <a href="#whyme"     onclick="toggleMenu()">Why Me</a>
+  <a href="#contact"   onclick="toggleMenu()">Contact</a>
+  <div class="otw" style="width:fit-content;"><span class="otw-dot"></span>Open to Commissions</div>
+</div>
+
+<!-- SCROLL LINE -->
+<div class="sline"><div class="sline-bar"></div><div class="sline-txt">scroll</div></div>
+
+<!-- ═══════════════════════════════
+     HERO
+═══════════════════════════════ -->
+<section id="hero">
+  <div class="wrap">
+    <div style="position:relative;">
+      <div class="hero-eyebrow" id="eyebrow"></div>
+      <h1 class="hero-name" onclick="openEgg()">Zelvyn</h1>
+      <div class="hero-subtitle">
+        Full Stack Developer &nbsp;&middot;&nbsp;
+        <span class="hl" data-i18n="hero_bot">Discord Bot Architect</span> &nbsp;&middot;&nbsp;
+        Game Developer &nbsp;&middot;&nbsp;
+        <span class="hl" data-i18n="hero_md">MD Student</span>
+      </div>
+      <div class="hero-founder" data-i18n="hero_founder">Founder &mdash; Akyne Productions</div>
+      <p class="hero-desc" id="heroDesc" data-i18n="hero_desc">Building production-grade web applications, engineering intelligent Discord bots, crafting Roblox experiences — and somewhere between Iceland and the cosmos, studying medicine and wondering why any of this exists.</p>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn btn-p" data-i18n="btn_work">View Work &rarr;</a>
+        <a href="#contact"  class="btn btn-o" data-i18n="btn_touch">Get in Touch</a>
+      </div>
+      <div class="since" data-i18n="since">Coding since <strong>2021</strong> &nbsp;&middot;&nbsp; 5 years in the craft &nbsp;&middot;&nbsp; 11+ projects shipped</div>
+      <div class="orbit-wrap">
+        <div class="o1" id="o1"></div>
+        <div class="o2" id="o2"></div>
+        <img class="avatar" id="ghAv" src="" alt="Zelvyn">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sdiv wrap"><div class="sdiv-dot"></div></div>
+
+<!-- ═══════════════════════════════
+     ABOUT
+═══════════════════════════════ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-lbl" data-i18n="sec_about">01 &nbsp; About</div>
+    <h2 class="sec-title" data-i18n="title_about">More than just <em>code</em></h2>
+    <div class="about-grid rv">
+      <div class="about-text">
+        <p data-i18n="about_p1"><strong>Zelvyn</strong> &mdash; full stack developer, MD student, and Founder of Akyne Productions, based in <strong>Iceland</strong>. Two disciplines, one common thread: finding order inside extraordinary complexity.</p>
+        <p data-i18n="about_p2">As <strong>Founder of Akyne Productions</strong>, the work spans production platforms serving real users, Discord bots running in live servers, and Roblox systems built to scale. Over 11 projects shipped &mdash; most under NDA, all built to last.</p>
+        <p data-i18n="about_p3">A committed <strong>existentialist</strong> &mdash; Sartre, Camus, Heidegger. The belief that existence precedes essence, that we define ourselves entirely through action, shapes everything built and everything studied.</p>
+        <div class="founder-note" data-i18n="founder_note">Founder &mdash; Akyne Productions &nbsp;&middot;&nbsp; akyne.pythonanywhere.com</div>
+      </div>
+      <div class="about-list">
+        <div class="about-item"><div class="about-item-name" data-i18n="ai_med_n">Medicine &mdash; MD</div><div class="about-item-desc" data-i18n="ai_med_d">The human body as the most complex system ever studied. Diagnosis, precision, systems thinking.</div></div>
+        <div class="about-item"><div class="about-item-name" data-i18n="ai_exi_n">Existentialism</div><div class="about-item-desc" data-i18n="ai_exi_d">Sartre. Camus. Heidegger. Radical freedom, authentic existence, the weight of being.</div></div>
+        <div class="about-item"><div class="about-item-name" data-i18n="ai_ast_n">Astronomy</div><div class="about-item-desc" data-i18n="ai_ast_d">Deep space cosmology, orbital mechanics, the scale of the universe and our place inside it.</div></div>
+        <div class="about-item"><div class="about-item-name" data-i18n="ai_poe_n">Poetry</div><div class="about-item-desc" data-i18n="ai_poe_d">Words arranged until they carry more than their meaning. Written in the margins of everything else.</div></div>
+        <div class="about-item"><div class="about-item-name" data-i18n="ai_lng_n">Languages Spoken</div><div class="about-item-desc" data-i18n="ai_lng_d">Icelandic (native) &mdash; English &mdash; Spanish. Communicates with clients across three languages.</div></div>
+        <div class="about-item"><div class="about-item-name" data-i18n="ai_sw_n">Software</div><div class="about-item-desc" data-i18n="ai_sw_d">Full stack web, Discord bots, game systems. Built with intention, built to last.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sdiv wrap"><div class="sdiv-dot"></div></div>
+
+<!-- ═══════════════════════════════
+     SKILLS
+═══════════════════════════════ -->
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-lbl" data-i18n="sec_skills">02 &nbsp; Skills</div>
+    <h2 class="sec-title" data-i18n="title_skills">The <em>arsenal</em></h2>
+    <div class="skills-grid rv">
+
+      <div class="sg">
+        <div class="sg-title">Languages</div>
+        <div class="tags">
+          <span class="tag c"><span class="fl fl-py"></span>Python</span>
+          <span class="tag c"><span class="fl fl-js"></span>JavaScript</span>
+          <span class="tag c"><span class="fl fl-cpp"></span>C++</span>
+          <span class="tag c"><span class="fl fl-java"></span>Java</span>
+          <span class="tag c"><span class="fl fl-c"></span>C</span>
+          <span class="tag c"><span class="fl fl-kt"></span>Kotlin</span>
+          <span class="tag c"><span class="fl fl-sql"></span>SQL</span>
+          <span class="tag c"><span class="fl fl-css"></span>CSS</span>
+          <span class="tag c"><span class="fl fl-lua"></span>Lua</span>
+          <span class="tag c"><span class="fl fl-luau"></span>LuaU</span>
+          <span class="tag c"><span class="fl fl-html"></span>HTML</span>
+          <span class="tag c"><span class="fl fl-swift"></span>Swift</span>
+        </div>
+      </div>
+
+      <div class="sg">
+        <div class="sg-title">Frameworks &amp; Libraries</div>
+        <div class="tags">
+          <span class="tag"><span class="fl fl-flask"></span>Flask</span>
+          <span class="tag"><span class="fl fl-react"></span>React</span>
+          <span class="tag"><span class="fl fl-node"></span>Node.js</span>
+          <span class="tag"><span class="fl fl-node"></span>Express.js</span>
+          <span class="tag"><span class="fl fl-django"></span>Django</span>
+          <span class="tag"><span class="fl fl-tw"></span>Tailwind CSS</span>
+          <span class="tag"><span class="fl fl-socket"></span>Socket.io</span>
+          <span class="tag"><span class="fl fl-jq"></span>jQuery</span>
+          <span class="tag"><span class="fl fl-flask"></span>Jinja2</span>
+        </div>
+      </div>
+
+      <div class="sg">
+        <div class="sg-title">Databases</div>
+        <div class="tags">
+          <span class="tag"><span class="fl fl-sqlite"></span>SQLite</span>
+          <span class="tag"><span class="fl fl-mysql"></span>MySQL</span>
+          <span class="tag"><span class="fl fl-mongo"></span>MongoDB</span>
+          <span class="tag"><span class="fl fl-fire"></span>Firebase</span>
+        </div>
+      </div>
+
+      <div class="sg">
+        <div class="sg-title">Tools &amp; Platforms</div>
+        <div class="tags">
+          <span class="tag t"><span class="fl fl-git"></span>Git &amp; GitHub</span>
+          <span class="tag t"><span class="fl fl-vsc"></span>VS Code</span>
+          <span class="tag t"><span class="fl fl-docker"></span>Docker</span>
+          <span class="tag t"><span class="fl fl-linux"></span>Linux</span>
+          <span class="tag t"><span class="fl fl-nginx"></span>Nginx</span>
+          <span class="tag t"><span class="fl fl-fig"></span>Figma</span>
+          <span class="tag t"><span class="fl fl-cf"></span>Cloudflare</span>
+        </div>
+      </div>
+
+      <div class="sg">
+        <div class="sg-title">APIs &amp; Services</div>
+        <div class="tags">
+          <span class="tag"><span class="fl fl-cld"></span>Cloudinary</span>
+          <span class="tag"><span class="fl fl-ai"></span>OpenRouter AI</span>
+          <span class="tag"><span class="fl fl-dc"></span>Discord API</span>
+          <span class="tag"><span class="fl fl-rest"></span>REST APIs</span>
+          <span class="tag"><span class="fl fl-rbx"></span>Roblox API</span>
+        </div>
+      </div>
+
+      <div class="sg">
+        <div class="sg-title">Deployment</div>
+        <div class="tags">
+          <span class="tag t"><span class="fl fl-vercel"></span>Vercel</span>
+          <span class="tag t"><span class="fl fl-netlify"></span>Netlify</span>
+          <span class="tag t"><span class="fl fl-aws"></span>AWS</span>
+          <span class="tag t"><span class="fl fl-rly"></span>Railway</span>
+          <span class="tag t"><span class="fl fl-gh"></span>GitHub Pages</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="sdiv wrap"><div class="sdiv-dot"></div></div>
+
+<!-- ═══════════════════════════════
+     CURRENTLY
+═══════════════════════════════ -->
+<section id="currently">
+  <div class="wrap">
+    <div class="sec-lbl" data-i18n="sec_now">03 &nbsp; Now</div>
+    <h2 class="sec-title" data-i18n="title_now">What I am doing <em>right now</em></h2>
+    <div class="curr-grid rv">
+      <div class="cc">
+        <div class="cc-dot g"></div>
+        <div>
+          <div class="cc-lbl" data-i18n="lbl_working">Working On</div>
+          <div class="cc-txt" data-i18n="cc_working">Custom Discord Bot &mdash; client commission</div>
+          <div class="cc-sub" data-i18n="cc_working_sub">Advanced moderation, economy system, and real-time event handling built from scratch.</div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="cc-dot b"></div>
+        <div>
+          <div class="cc-lbl" data-i18n="lbl_learning">Learning</div>
+          <div class="cc-txt" data-i18n="cc_learning">Swift &nbsp;&middot;&nbsp; Roblox Script Executors &amp; Injections</div>
+          <div class="cc-sub" data-i18n="cc_learning_sub">iOS development and deeper Roblox engine internals &mdash; executor architecture and injection mechanics.</div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="cc-dot y"></div>
+        <div>
+          <div class="cc-lbl" data-i18n="lbl_comm">Commissions</div>
+          <div class="cc-txt" data-i18n="cc_comm">Open &mdash; but expect a wait</div>
+          <div class="cc-sub" data-i18n="cc_comm_sub">Currently handling active work. Reach out and I will get back to you when a slot opens.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sdiv wrap"><div class="sdiv-dot"></div></div>
+
+<!-- ═══════════════════════════════
+     PROJECTS
+═══════════════════════════════ -->
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-lbl" data-i18n="sec_projects">04 &nbsp; Projects</div>
+    <h2 class="sec-title" data-i18n="title_projects">Things I have <em>shipped</em></h2>
+    <div class="proj-grid rv">
+
+      <div class="pc featured">
+        <div>
+          <div class="pc-badge" data-i18n="pc_badge">Featured &mdash; Akyne Productions</div>
+          <div class="pc-num">001</div>
+          <div class="pc-name" data-i18n="pc1_name">Varhama</div>
+          <div class="pc-desc" data-i18n="pc1_desc">A complete productivity platform built from scratch &mdash; password-protected vault, rich note editor, database system, AI chat assistant, ambient focus mode, and full cross-device sync via a custom authentication system.</div>
+          <div class="pc-tags">
+            <span class="tag c"><span class="fl fl-py"></span>Python</span>
+            <span class="tag"><span class="fl fl-flask"></span>Flask</span>
+            <span class="tag"><span class="fl fl-sqlite"></span>SQLite</span>
+            <span class="tag"><span class="fl fl-cld"></span>Cloudinary</span>
+            <span class="tag"><span class="fl fl-ai"></span>OpenRouter AI</span>
+          </div>
+          <a href="https://varhama.pythonanywhere.com" target="_blank" class="pc-link">Visit Live &rarr;</a>
+        </div>
+        <div class="code-block">
+          <div><span class="kw">@app.route</span>(<span class="st">'/vault/home'</span>)</div>
+          <div><span class="kw">@user_required</span></div>
+          <div><span class="kw">def</span> <span class="fn">vault_home</span>():</div>
+          <div>&nbsp;&nbsp;uid = <span class="fn">get_uid</span>()</div>
+          <div>&nbsp;&nbsp;files = <span class="fn">get_files_cached</span>(</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;page=page, user_id=uid</div>
+          <div>&nbsp;&nbsp;)</div>
+          <div>&nbsp;&nbsp;<span class="kw">return</span> <span class="fn">render_template</span>(</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="st">'vault.html'</span>,</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;username=session[<span class="st">'username'</span>]</div>
+          <div>&nbsp;&nbsp;)</div>
+        </div>
+      </div>
+
+      <a href="https://akyne.pythonanywhere.com" target="_blank" class="pc">
+        <div class="pc-num">002</div>
+        <div class="pc-name" data-i18n="pc2_name">Akyne Platform</div>
+        <div class="pc-desc" data-i18n="pc2_desc">Production web platform under Akyne Productions &mdash; independently built, deployed, and maintained. Serving real users.</div>
+        <div class="pc-tags">
+          <span class="tag"><span class="fl fl-flask"></span>Flask</span>
+          <span class="tag c"><span class="fl fl-py"></span>Python</span>
+        </div>
+        <span class="pc-link">Visit Live &rarr;</span>
+      </a>
+
+      <a href="https://github.com/zelvyn-dev" target="_blank" class="pc">
+        <div class="pc-num">003</div>
+        <div class="pc-name" data-i18n="pc3_name">Discord Bot Suite</div>
+        <div class="pc-desc" data-i18n="pc3_desc">Multiple feature-rich bots engineered from scratch &mdash; moderation systems, economy engines, event-driven architecture, real-time interactions at scale.</div>
+        <div class="pc-tags">
+          <span class="tag c"><span class="fl fl-py"></span>Python</span>
+          <span class="tag"><span class="fl fl-dc"></span>Discord API</span>
+          <span class="tag"><span class="fl fl-mongo"></span>MongoDB</span>
+        </div>
+        <span class="pc-link">GitHub &rarr;</span>
+      </a>
+
+      <a href="https://github.com/zelvyn-dev" target="_blank" class="pc">
+        <div class="pc-num">004</div>
+        <div class="pc-name" data-i18n="pc4_name">Roblox Game Systems</div>
+        <div class="pc-desc" data-i18n="pc4_desc">Custom game mechanics in LuaU &mdash; server-client architecture, UI frameworks, anti-exploit systems, and gameplay loops built for real scale.</div>
+        <div class="pc-tags">
+          <span class="tag c"><span class="fl fl-luau"></span>LuaU</span>
+          <span class="tag c"><span class="fl fl-lua"></span>Lua</span>
+          <span class="tag"><span class="fl fl-rbx"></span>Roblox Studio</span>
+        </div>
+        <span class="pc-link">GitHub &rarr;</span>
+      </a>
+
+      <div class="pc" id="ghCard" style="display:none;">
+        <div class="pc-num">005</div>
+        <div class="pc-name" id="ghName">Loading...</div>
+        <div class="pc-desc" id="ghDesc">Fetching from GitHub...</div>
+        <div class="pc-tags" id="ghTags"></div>
+        <a id="ghLink" href="#" target="_blank" class="pc-link">View on GitHub &rarr;</a>
+      </div>
+
+      <div class="pc">
+        <div class="pc-num">006</div>
+        <div class="pc-name" data-i18n="pc6_name">Private Commissions</div>
+        <div class="pc-desc" data-i18n="pc6_desc">11+ projects built across web, Discord, and game development &mdash; 8+ clients served. Most under NDA. The track record is real even when the names cannot be shown.</div>
+        <div class="pc-tags">
+          <span class="tag">Various Stack</span>
+          <span class="tag">NDA</span>
+        </div>
+        <span class="pc-link" style="opacity:.35;cursor:default;">Confidential</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="sdiv wrap"><div class="sdiv-dot"></div></div>
+
+<!-- ═══════════════════════════════
+     WHY ME
+═══════════════════════════════ -->
+<section id="whyme">
+  <div class="wrap">
+    <div class="sec-lbl" data-i18n="sec_whyme">05 &nbsp; Why Me</div>
+    <h2 class="sec-title" data-i18n="title_whyme">Why choose <em>Zelvyn</em></h2>
+    <div class="wm-grid rv">
+      <div class="wm">
+        <div class="wm-num">01</div>
+        <div class="wm-title" data-i18n="wm1_t">Full Stack &mdash; <em>Literally</em></div>
+        <div class="wm-desc" data-i18n="wm1_d">Frontend, backend, database, deployment, auth, APIs &mdash; the entire system, handled by one developer. No handoffs. No bottlenecks. Full picture, full stack.</div>
+      </div>
+      <div class="wm">
+        <div class="wm-num">02</div>
+        <div class="wm-title" data-i18n="wm2_t">Already <em>Shipped</em></div>
+        <div class="wm-desc" data-i18n="wm2_d">These are not side projects collecting dust. Varhama is live. Akyne is live. Discord bots are running in real servers with real users. Built, deployed, maintained.</div>
+        <div class="wm-stat">11+<span>Projects Shipped</span></div>
+      </div>
+      <div class="wm">
+        <div class="wm-num">03</div>
+        <div class="wm-title" data-i18n="wm3_t">Cross-Domain <em>Thinking</em></div>
+        <div class="wm-desc" data-i18n="wm3_d">Studying medicine while building software is not a contradiction &mdash; it is an edge. Systems thinking, diagnostic precision, and root-cause analysis apply everywhere.</div>
+      </div>
+      <div class="wm">
+        <div class="wm-num">04</div>
+        <div class="wm-title" data-i18n="wm4_t">Multi-Language <em>Native</em></div>
+        <div class="wm-desc" data-i18n="wm4_d">12 languages across web, systems, mobile, scripting, and game development. The right tool for the right problem &mdash; not one hammer for every nail.</div>
+        <div class="wm-stat">12+<span>Languages</span></div>
+      </div>
+      <div class="wm">
+        <div class="wm-num">05</div>
+        <div class="wm-title" data-i18n="wm5_t">Founder <em>Mindset</em></div>
+        <div class="wm-desc" data-i18n="wm5_d">As Founder of Akyne Productions, the focus is not just writing code &mdash; it is building products. Users, longevity, and what it takes to survive contact with reality all factor in from day one.</div>
+      </div>
+      <div class="wm">
+        <div class="wm-num">06</div>
+        <div class="wm-title" data-i18n="wm6_t">Built to <em>Last</em></div>
+        <div class="wm-desc" data-i18n="wm6_d">Code that works once is not enough. Every system is designed for maintainability, scalability, and the kind of longevity that survives whoever touches it next.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sdiv wrap"><div class="sdiv-dot"></div></div>
+
+<!-- ═══════════════════════════════
+     CONTACT
+═══════════════════════════════ -->
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-lbl" data-i18n="sec_contact">06 &nbsp; Contact</div>
+    <div class="contact-grid rv">
+      <div>
+        <div class="contact-big" data-i18n="contact_big">Let us build<br><em>something</em>.</div>
+        <p class="contact-p" data-i18n="contact_p">Open to commissions, collaborations, and conversations worth having. Whether you need a full stack application, a Discord bot that actually works, or a Roblox system built properly &mdash; reach out. Fluent in English, Icelandic, and Spanish.</p>
+        <a href="/cdn-cgi/l/email-protection#a5c4d7c6c0d0d6cbccd7d3c4cbc4e5c2c8c4ccc98bc6cac8" class="btn btn-p" data-i18n="btn_msg">Send a Message &rarr;</a>
+      </div>
+      <div class="clinks">
+        <div class="cl" onclick="copyEmail()" style="cursor:none;">
+          <div class="cl-ico">@</div>
+          <div class="cl-info">
+            <div class="cl-lbl">Email</div>
+            <div class="cl-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="48293a2b2d3d3b26213a3e292629082f25292124662b2725">[email&#160;protected]</a></div>
+          </div>
+          <div class="cl-arr">&rarr;</div>
+        </div>
+        <a href="https://github.com/zelvyn-dev" target="_blank" class="cl">
+          <div class="cl-ico">GH</div>
+          <div>
+            <div class="cl-lbl">GitHub</div>
+            <div class="cl-val">zelvyn-dev</div>
+          </div>
+          <div class="cl-arr">&rarr;</div>
+        </a>
+        <a href="https://discord.com/users/zelvyn.dev" target="_blank" class="cl">
+          <div class="cl-ico">DC</div>
+          <div>
+            <div class="cl-lbl">Discord</div>
+            <div class="cl-val">zelvyn.dev</div>
+          </div>
+          <div class="cl-arr">&rarr;</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <p>Built by <span class="hi">Zelvyn</span> &nbsp;&middot;&nbsp; Akyne Productions &nbsp;&middot;&nbsp; <span class="hi">&copy; 2026</span></p>
+      <span class="foot-r" data-i18n="footer_quote">existence precedes essence</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════════════ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── LOADER ──
+const loaderTxts = ['Initializing...','Loading systems...','Mapping the cosmos...','Almost there...'];
+let lti = 0;
+const ltEl = document.getElementById('ldTxt');
+const ltInt = setInterval(() => { lti++; if(lti < loaderTxts.length) ltEl.textContent = loaderTxts[lti]; }, 400);
+window.addEventListener('load', () => {
+  clearInterval(ltInt);
+  setTimeout(() => { document.getElementById('loader').classList.add('fade'); setTimeout(()=>document.getElementById('loader').remove(), 800); }, 1600);
+});
+
+// ── CURSOR ──
+const cur = document.getElementById('cur'), cur2 = document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  // dot follows instantly with no lag
+  cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px';
+  mx=e.clientX; my=e.clientY;
+}, {passive:true});
+// ring follows with very slight smooth lag
+(function animC(){
+  rx+=(mx-rx)*.25; ry+=(my-ry)*.25;
+  // snap if very close to avoid jitter
+  if(Math.abs(mx-rx)<0.5) rx=mx;
+  if(Math.abs(my-ry)<0.5) ry=my;
+  cur2.style.left=rx+'px'; cur2.style.top=ry+'px';
+  requestAnimationFrame(animC);
+})();
+document.querySelectorAll('a,button,.pc,.wm,.cc,.about-item,.cl,.tag').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.style.width='16px'; cur.style.height='16px'; cur2.style.width='44px'; cur2.style.height='44px'; });
+  el.addEventListener('mouseleave', () => { cur.style.width='9px';  cur.style.height='9px';  cur2.style.width='30px'; cur2.style.height='30px'; });
+});
+
+// ── STARFIELD ──
+const sfc = document.getElementById('sf'), sctx = sfc.getContext('2d');
+let stars = [];
+function resizeSF() { sfc.width = innerWidth; sfc.height = innerHeight; }
+function initStars() {
+  stars = [];
+  for(let i=0;i<300;i++) stars.push({x:Math.random()*sfc.width,y:Math.random()*sfc.height,r:Math.random()*.9+.1,a:Math.random()*.6+.1,tw:Math.random()*6.28,sp:Math.random()*.003+.001,g:false});
+  for(let i=0;i<12;i++) stars.push({x:Math.random()*sfc.width,y:Math.random()*sfc.height,r:1.2,a:.75,tw:Math.random()*6.28,sp:.0008,g:true});
+}
+function drawStars() {
+  sctx.clearRect(0,0,sfc.width,sfc.height);
+  stars.forEach(s => {
+    s.tw += s.sp;
+    const a = s.a*(0.3+0.7*Math.sin(s.tw));
+    if(s.g) {
+      const g = sctx.createRadialGradient(s.x,s.y,0,s.x,s.y,8);
+      g.addColorStop(0,`rgba(150,210,255,${a})`);
+      g.addColorStop(.5,`rgba(50,150,255,${a*.3})`);
+      g.addColorStop(1,'transparent');
+      sctx.fillStyle=g; sctx.fillRect(s.x-8,s.y-8,16,16);
+    }
+    sctx.beginPath(); sctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    sctx.fillStyle=`rgba(160,210,255,${a})`; sctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+resizeSF(); initStars(); drawStars();
+window.addEventListener('resize', () => { resizeSF(); initStars(); });
+
+// ── MOUSE PARALLAX on orbit rings ──
+const o1 = document.getElementById('o1'), o2 = document.getElementById('o2');
+document.addEventListener('mousemove', e => {
+  if(!o1) return;
+  const cx = innerWidth/2, cy = innerHeight/2;
+  const dx = (e.clientX - cx) / cx, dy = (e.clientY - cy) / cy;
+  o1.style.transform = `rotate(${dx*8}deg) translateY(${dy*10}px)`;
+  o2.style.transform = `rotate(${-dx*6}deg) translateY(${dy*-7}px)`;
+});
+
+// ── SCROLL PROGRESS + BACK TO TOP + NAV HIGHLIGHT ──
+const sections = ['about','skills','currently','projects','whyme','contact'];
+window.addEventListener('scroll', () => {
+  // progress bar
+  const prog = (scrollY / (document.body.scrollHeight - innerHeight)) * 100;
+  document.getElementById('progress').style.width = prog + '%';
+  // back to top
+  document.getElementById('btt').classList.toggle('show', scrollY > 400);
+  // active nav
+  let current = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && scrollY >= el.offsetTop - 200) current = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.dataset.s === current);
+  });
+});
+
+// ── REVEAL ──
+const rvObs = new IntersectionObserver(es => { es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); }); }, {threshold:.08});
+document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
+
+// ── GITHUB ──
+async function loadGH() {
+  try {
+    const u = await fetch('https://api.github.com/users/zelvyn-dev').then(r=>r.json());
+    if(u.avatar_url) document.getElementById('ghAv').src = u.avatar_url;
+    const repos = await fetch('https://api.github.com/users/zelvyn-dev/repos?sort=updated&per_page=10').then(r=>r.json());
+    const pick = repos.filter(r=>!r.fork&&r.description&&r.name.toLowerCase()!=='zelvyn-dev').slice(0,1)[0];
+    if(pick) {
+      document.getElementById('ghName').textContent = pick.name;
+      document.getElementById('ghDesc').textContent = pick.description;
+      if(pick.language) document.getElementById('ghTags').innerHTML = `<span class="tag c">${pick.language}</span>`;
+      document.getElementById('ghLink').href = pick.html_url;
+      document.getElementById('ghCard').style.display = 'block';
+    }
+  } catch(e) {}
+}
+loadGH();
+
+// ── TYPING EYEBROW ──
+const eyebrow = document.getElementById('eyebrow');
+let li=0,ci=0,del=false;
+function type() {
+  const t = typingLines[li % typingLines.length];
+  if(!del) { eyebrow.textContent = t.slice(0,++ci); if(ci===t.length){del=true;setTimeout(type,2000);return;} }
+  else { eyebrow.textContent = t.slice(0,--ci); if(ci===0){del=false;li=(li+1)%typingLines.length;} }
+  if(!del && ci===0) li=(li+1)%typingLines.length;
+setTimeout(type, del?38:72);
+}
+setTimeout(type, 1800);
+
+// ── MOBILE MENU ──
+function toggleMenu() {
+  document.getElementById('hbg').classList.toggle('open');
+  document.getElementById('mob').classList.toggle('open');
+}
+
+// ── COPY EMAIL ──
+function copyEmail() {
+  navigator.clipboard.writeText('arceusnirvana@gmail.com').then(() => {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  });
+}
+
+// ── CONSTELLATION EASTER EGG ──
+let eggState = 0; // 0=closed, 1=constellation, 2=quote
+const cegg = document.getElementById('cegg');
+const ccanvas = document.getElementById('ccanvas');
+const cctx = ccanvas.getContext('2d');
+
+// Orion-like constellation points (normalized 0-1)
+const constPoints = [
+  {x:.35,y:.2},{x:.5,y:.25},{x:.65,y:.2},   // belt top
+  {x:.35,y:.35},{x:.5,y:.4},{x:.65,y:.35},  // belt
+  {x:.28,y:.55},{x:.72,y:.55},               // shoulders
+  {x:.32,y:.7},{x:.68,y:.7},                 // feet
+  {x:.5,y:.12},                              // head
+];
+const constLines = [[0,1],[1,2],[3,4],[4,5],[0,3],[2,5],[3,7],[5,6],[6,8],[7,9],[1,10]];
+
+function drawConstellation(progress) {
+  ccanvas.width = innerWidth; ccanvas.height = innerHeight;
+  cctx.clearRect(0,0,ccanvas.width,ccanvas.height);
+  const pts = constPoints.map(p => ({
+    x: p.x * ccanvas.width * .5 + ccanvas.width * .25,
+    y: p.y * ccanvas.height * .65 + ccanvas.height * .1,
+  }));
+  // draw lines
+  const totalLines = Math.floor(constLines.length * progress);
+  cctx.strokeStyle = 'rgba(0,212,255,.3)';
+  cctx.lineWidth = 1;
+  for(let i=0;i<totalLines;i++) {
+    const [a,b] = constLines[i];
+    cctx.beginPath(); cctx.moveTo(pts[a].x,pts[a].y); cctx.lineTo(pts[b].x,pts[b].y); cctx.stroke();
+  }
+  // draw stars
+  pts.forEach((p,i) => {
+    const alpha = Math.min(1, progress * constPoints.length / (i+1));
+    const g = cctx.createRadialGradient(p.x,p.y,0,p.x,p.y,12);
+    g.addColorStop(0,`rgba(180,230,255,${alpha})`);
+    g.addColorStop(.4,`rgba(0,212,255,${alpha*.4})`);
+    g.addColorStop(1,'transparent');
+    cctx.fillStyle=g; cctx.fillRect(p.x-12,p.y-12,24,24);
+    cctx.beginPath(); cctx.arc(p.x,p.y,2.5,0,Math.PI*2);
+    cctx.fillStyle=`rgba(220,240,255,${alpha})`; cctx.fill();
+  });
+}
+
+function openEgg() {
+  if(eggState !== 0) return;
+  eggState = 1;
+  cegg.classList.add('show');
+  let prog = 0;
+  const anim = setInterval(() => {
+    prog = Math.min(1, prog + .025);
+    drawConstellation(prog);
+    if(prog >= 1) clearInterval(anim);
+  }, 30);
+  document.addEventListener('keydown', onEggKey);
+}
+
+function onEggKey(e) { if(e.key === 'Escape') closeEgg(); }
+
+cegg.addEventListener('click', e => {
+  if(e.target.classList.contains('cegg-close')) return;
+  if(eggState === 1) {
+    eggState = 2;
+    cegg.classList.add('show-q');
+  } else if(eggState === 2) {
+    closeEgg();
+  }
+});
+
+function closeEgg() {
+  cegg.classList.remove('show','show-q');
+  document.removeEventListener('keydown', onEggKey);
+  setTimeout(() => { eggState = 0; cctx.clearRect(0,0,ccanvas.width,ccanvas.height); }, 900);
+}
+
+// ── LANGUAGE SWITCHER ──
+const TRANSLATIONS = {
+  en: {
+    nav_about:'About', nav_skills:'Skills', nav_now:'Now',
+    nav_projects:'Projects', nav_whyme:'Why Me', nav_contact:'Contact',
+    otw:'Open to Commissions',
+    hero_bot:'Discord Bot Architect', hero_md:'MD Student',
+    hero_founder:'Founder \u2014 Akyne Productions',
+    hero_desc:'Building production-grade web applications, engineering intelligent Discord bots, crafting Roblox experiences \u2014 and somewhere between Iceland and the cosmos, studying medicine and wondering why any of this exists.',
+    since:'Coding since <strong>2021</strong> \u00a0\u00b7\u00a0 5 years in the craft \u00a0\u00b7\u00a0 11+ projects shipped',
+    sec_about:'01 \u00a0 About', title_about:'More than just <em>code</em>',
+    sec_skills:'02 \u00a0 Skills', title_skills:'The <em>arsenal</em>',
+    sec_now:'03 \u00a0 Now', title_now:'What I am doing <em>right now</em>',
+    sec_projects:'04 \u00a0 Projects', title_projects:'Things I have <em>shipped</em>',
+    sec_whyme:'05 \u00a0 Why Me', title_whyme:'Why choose <em>Zelvyn</em>',
+    sec_contact:'06 \u00a0 Contact',
+    contact_big:'Let us build<br><em>something</em>.',
+    contact_p:'Open to commissions, collaborations, and conversations worth having. Whether you need a full stack application, a Discord bot that actually works, or a Roblox system built properly \u2014 reach out. Fluent in English, Icelandic, and Spanish.',
+    btn_work:'View Work \u2192', btn_touch:'Get in Touch', btn_msg:'Send a Message \u2192',
+    lbl_working:'Working On', cc_working:'Custom Discord Bot \u2014 client commission',
+    cc_working_sub:'Advanced moderation, economy system, and real-time event handling built from scratch.',
+    lbl_learning:'Learning', cc_learning:'Swift \u00a0\u00b7\u00a0 Roblox Script Executors & Injections',
+    cc_learning_sub:'iOS development and deeper Roblox engine internals \u2014 executor architecture and injection mechanics.',
+    lbl_comm:'Commissions', cc_comm:'Open \u2014 but expect a wait',
+    cc_comm_sub:'Currently handling active work. Reach out and I will get back to you when a slot opens.',
+    footer_quote:'existence precedes essence',
+    about_p1:'<strong>Zelvyn</strong> — full stack developer, MD student, and Founder of Akyne Productions, based in <strong>Iceland</strong>. Two disciplines, one common thread: finding order inside extraordinary complexity.',
+    about_p2:'As <strong>Founder of Akyne Productions</strong>, the work spans production platforms serving real users, Discord bots running in live servers, and Roblox systems built to scale. Over 11 projects shipped — most under NDA, all built to last.',
+    about_p3:'A committed <strong>existentialist</strong> — Sartre, Camus, Heidegger. The belief that existence precedes essence shapes everything built and everything studied.',
+    founder_note:'Founder — Akyne Productions · akyne.pythonanywhere.com',
+    ai_med_n:'Medicine — MD', ai_med_d:'The human body as the most complex system ever studied. Diagnosis, precision, systems thinking.',
+    ai_exi_n:'Existentialism', ai_exi_d:'Sartre. Camus. Heidegger. Radical freedom, authentic existence, the weight of being.',
+    ai_ast_n:'Astronomy', ai_ast_d:'Deep space cosmology, orbital mechanics, the scale of the universe and our place inside it.',
+    ai_poe_n:'Poetry', ai_poe_d:'Words arranged until they carry more than their meaning. Written in the margins of everything else.',
+    ai_lng_n:'Languages Spoken', ai_lng_d:'Icelandic (native) — English — Spanish. Communicates with clients across three languages.',
+    ai_sw_n:'Software', ai_sw_d:'Full stack web, Discord bots, game systems. Built with intention, built to last.',
+    pc_badge:'Featured — Akyne Productions',
+    pc1_name:'Varhama', pc1_desc:'A complete productivity platform built from scratch — vault, rich note editor, database system, AI assistant, focus mode, and cross-device sync via custom authentication.',
+    pc2_name:'Akyne Platform', pc2_desc:'Production web platform under Akyne Productions — independently built, deployed, and maintained.',
+    pc3_name:'Discord Bot Suite', pc3_desc:'Multiple bots engineered from scratch — moderation, economy engines, event-driven architecture, real-time interactions at scale.',
+    pc4_name:'Roblox Game Systems', pc4_desc:'Custom mechanics in LuaU — server-client architecture, UI frameworks, anti-exploit systems, gameplay loops built for scale.',
+    pc6_name:'Private Commissions', pc6_desc:'11+ projects — 8+ clients. Most under NDA. The track record is real even when the names cannot be shown.',
+    wm1_t:'Full Stack — <em>Literally</em>', wm1_d:'Frontend, backend, database, deployment, auth, APIs — the entire system, handled by one developer. No handoffs. No bottlenecks.',
+    wm2_t:'Already <em>Shipped</em>', wm2_d:'Varhama is live. Akyne is live. Discord bots run in real servers with real users. Built, deployed, maintained.',
+    wm3_t:'Cross-Domain <em>Thinking</em>', wm3_d:'Studying medicine while building software is not a contradiction — it is an edge. Systems thinking applies everywhere.',
+    wm4_t:'Multi-Language <em>Native</em>', wm4_d:'12 languages across web, systems, mobile, scripting, and game development. The right tool for the right problem.',
+    wm5_t:'Founder <em>Mindset</em>', wm5_d:'As Founder of Akyne Productions, the focus is building products — not just writing code. Users, longevity, and reality all factor in.',
+    wm6_t:'Built to <em>Last</em>', wm6_d:'Code that works once is not enough. Every system is designed for maintainability, scalability, and longevity.',
+  },
+  is: {
+    nav_about:'Um mig', nav_skills:'H\xe6fileikar', nav_now:'N\xfa',
+    nav_projects:'Verkefni', nav_whyme:'Af hverju m\xe9g', nav_contact:'Samband',
+    otw:'Opin fyrir pantanir',
+    hero_bot:'Discord Bot Smi\xf0ur', hero_md:'L\xe6knan\xe9mi',
+    hero_founder:'Stofnandi \u2014 Akyne Productions',
+    hero_desc:'Smj\xf0 framl\xe6\xf0slut\xe6k vefforrit, h\xf6nnun greindra Discord bota, smi\xf0ur Roblox upplifana \u2014 og einhvers sta\xf0ar \xe1 milli \xcdslandi og alheims, n\xe6m\xe1 l\xe6kningar og spreyting af hverju neitt af \xfe\xe9ssu er til.',
+    since:'Forritunar sl\xed\xf0an <strong>2021</strong> \u00a0\u00b7\u00a0 5 \xe1r \xed f\xe6rninni \u00a0\u00b7\u00a0 11+ verkefni send',
+    sec_about:'01 \u00a0 Um mig', title_about:'Meira en bara <em>k\xf3\xf0i</em>',
+    sec_skills:'02 \u00a0 H\xe6fileikar', title_skills:'<em>Vopnab\xfar</em>',
+    sec_now:'03 \u00a0 N\xfa', title_now:'Hvern\xed\xf0 h\xefn er <em>n\xfa</em>',
+    sec_projects:'04 \u00a0 Verkefni', title_projects:'Hlu\xfeir sem h\xefn hefur <em>sent</em>',
+    sec_whyme:'05 \u00a0 Af hverju m\xe9g', title_whyme:'Af hverju velja <em>Zelvyn</em>',
+    sec_contact:'06 \u00a0 Samband',
+    contact_big:'L\xe6tum smj\xf0a<br><em>eitthva\xf0</em>.',
+    contact_p:'Opin fyrir pantanir, samvinnu og samr\xe6\xf0ur sem \xfeer af. Hvort sem \xfe\xfa \xfearft vefforrit, Discord bot sem virkar, e\xf0a Roblox kerfi \u2014 haftu samband. H\xefn talar \xcdslenska, Ensku og Sp\xe6nsku.',
+    btn_work:'Sj\xe1 verkefni \u2192', btn_touch:'Hafa samband', btn_msg:'Senda sk\xe9yti \u2192',
+    lbl_working:'Vinnur a\xf0', cc_working:'S\xe9rsniðinn Discord Bot \u2014 fyrir vi\xf0skiptavin',
+    cc_working_sub:'T\xe6kni\xf0ar eftirlit, efnahagslegt kerfi og raunveruleg atbur\xf0arkeðja sm\xed\xf0 frá grunni.',
+    lbl_learning:'N\xe6mir', cc_learning:'Swift \u00a0\u00b7\u00a0 Roblox Script Executors & Injections',
+    cc_learning_sub:'iOS \xferou\xf0kun og dypri Roblox v\xe9larm\xf3\xf0ur \u2014 executor h\xf6gun og injection t\xe6kni.',
+    lbl_comm:'Pantanir', cc_comm:'Opið \u2014 en b\xed\xf0 eftir r\xf6\xf0',
+    cc_comm_sub:'Meðhöndlar n\xfa virkni. Haftu samband og h\xefn mun svara \xfe\xe9r \xfe\xe6r sem sæti opnast.',
+    footer_quote:'tilvist kemur \xe1 undan e\xf0li',
+    about_p1:'<strong>Zelvyn</strong> \u2014 full stack \xferou\xf0andi, l\xe6knan\xe9mi og stofnandi Akyne Productions, fr\xe1 <strong>\xcdslandi</strong>. Tv\xe6r greinar, eitt sameiginlegt: a\xf0 finna r\xf6\xf0 \xed fl\xe6kni.',
+    about_p2:'Sem <strong>stofnandi Akyne Productions</strong> n\xe6r vinnan yfir framl\xe6\xf0slu kv\xe6mur \xe1 raunverulegum notendum og Discord bota. Yfir 11 verkefni send \u2014 fl\xe6st undir NDA.',
+    about_p3:'St\xfa\xf0 <strong>tilvistarsinnari</strong> \u2014 Sartre, Camus, Heidegger. Tr\xfain \xe1 a\xf0 tilvist komi \xe1 undan e\xf0li m\xf3tar allt.',
+    founder_note:'Stofnandi \u2014 Akyne Productions \u00b7 akyne.pythonanywhere.com',
+    ai_med_n:'L\xe6kni\xf0jar \u2014 MD', ai_med_d:'Mannsl\xeekaminn sem fl\xf3knasta kerfi\xf0. Greining, n\xe6kv\xe6mni, kerfishugsunn.',
+    ai_exi_n:'Tilvistarsinnastefna', ai_exi_d:'Sartre. Camus. Heidegger. Geigvirkni frelsis og s\xe9r raunveru.',
+    ai_ast_n:'Stj\xf6rnufr\xe6\xf0i', ai_ast_d:'D\xfdpt\xe6r geimfr\xe6\xf0i og m\xe6likvar\xf0inn \xe1 alheiminn.',
+    ai_poe_n:'Lj\xf3\xf0list', ai_poe_d:'Or\xf0 r\xf6\xf0u\xf0 \xfe til \xfe\xe6r bera meira en merkingu \xfe\xe6rra.',
+    ai_lng_n:'T\xf6lum\xe1l', ai_lng_d:'\xcdslenska (m\xf3\xf0urm\xe1l) \u2014 Enska \u2014 Sp\xe6nska.',
+    ai_sw_n:'Hugb\xfana\xf0ur', ai_sw_d:'Full stack vefur, Discord botar, leikjakerfi. Bygg\xf0 me\xf0 \xe1form.',
+    pc_badge:'A\xf0alverkefni \u2014 Akyne Productions',
+    pc1_name:'Varhama', pc1_desc:'Full framl\xe6\xf0slukerfi bygg\xf0 fr\xe1 grunni \u2014 vault, rithj\xe1lpi, gagnagrunnur, gervigreind og \xfall\xe6gur samst\xf6llun.',
+    pc2_name:'Akyne Pl\xe1tform', pc2_desc:'Framl\xe6\xf0sluvefur undir Akyne Productions \u2014 bygg\xf0ur, keyr\xf0ur og vi\xf0haldinn ein s\xe6r.',
+    pc3_name:'Discord Bot S\xedfurlotur', pc3_desc:'Margir botar fr\xe1 grunni \u2014 eftirlit, efnahag, atbur\xf0akeyrt.',
+    pc4_name:'Roblox Leikjakerfi', pc4_desc:'S\xe9rsni\xf0in leikjamek\xe1n\xedk \xed LuaU \u2014 \xfej\xf3nn-bi\xf0lari bygging.',
+    pc6_name:'Einka pantanir', pc6_desc:'11+ verkefni \u2014 8+ vi\xf0skiptavinir. Fl\xe6st undir NDA.',
+    wm1_t:'Full Stack \u2014 <em>B\xf3kstaflega</em>', wm1_d:'Framendi, bakendi, gagnagrunnur \u2014 allt kerfið undir einni \xferou\xf0anda.',
+    wm2_t:'\xdeegar <em>afhent</em>', wm2_d:'Varhama er \xe1 netinu. Akyne er \xe1 netinu. Discord botar keyra \xed raunverulegum netþj\xf3num.',
+    wm3_t:'Þverf\xf3ttarleg <em>hugsun</em>', wm3_d:'A\xf0 l\xe6ra l\xe6knis fr\xe6\xf0i me\xf0an hugb\xfana\xf0ur er bygg\xf0ur er ekki mo\xf0ugnun \u2014 þa\xf0 er forskot.',
+    wm4_t:'Fj\xf6lt\xfangu <em>f\xe6\xf0d</em>', wm4_d:'12 forritunarm\xe1l. R\xe9tta t\xe6ki\xf0 fyrir r\xe9tta vandamal\xed\xf0.',
+    wm5_t:'Stofnanda <em>hugsunn</em>', wm5_d:'Sem stofnandi Akyne Productions er m\xe1li\xf0 a\xf0 byggja v\xf6rur \u2014 ekki bara skrifa k\xf3\xf0a.',
+    wm6_t:'Bygg\xf0 til a\xf0 <em>vara</em>', wm6_d:'K\xf3\xf0i sem virkar einu sinni er ekki n\xf3g\xf0. Hvert kerfi er h\xf6nnunar til vi\xf0hald.',
+  },
+  es: {
+    nav_about:'Sobre m\xed', nav_skills:'Habilidades', nav_now:'Ahora',
+    nav_projects:'Proyectos', nav_whyme:'Por qu\xe9 yo', nav_contact:'Contacto',
+    otw:'Disponible para proyectos',
+    hero_bot:'Arquitecta de Bots Discord', hero_md:'Estudiante de Medicina',
+    hero_founder:'Fundadora \u2014 Akyne Productions',
+    hero_desc:'Construyendo aplicaciones web de producci\xf3n, ingeniando bots Discord inteligentes, creando experiencias en Roblox \u2014 y en alg\xfan lugar entre Islandia y el cosmos, estudiando medicina y pregunt\xe1ndose por qu\xe9 existe todo esto.',
+    since:'Programando desde <strong>2021</strong> \u00a0\u00b7\u00a0 5 años de oficio \u00a0\u00b7\u00a0 11+ proyectos entregados',
+    sec_about:'01 \u00a0 Sobre m\xed', title_about:'M\xe1s que solo <em>c\xf3digo</em>',
+    sec_skills:'02 \u00a0 Habilidades', title_skills:'El <em>arsenal</em>',
+    sec_now:'03 \u00a0 Ahora', title_now:'Lo que estoy haciendo <em>ahora mismo</em>',
+    sec_projects:'04 \u00a0 Proyectos', title_projects:'Cosas que he <em>lanzado</em>',
+    sec_whyme:'05 \u00a0 Por qu\xe9 yo', title_whyme:'Por qu\xe9 elegir a <em>Zelvyn</em>',
+    sec_contact:'06 \u00a0 Contacto',
+    contact_big:'Construyamos<br><em>algo</em>.',
+    contact_p:'Abierta a comisiones, colaboraciones y conversaciones que valgan la pena. Si necesitas una aplicaci\xf3n web, un bot Discord que funcione de verdad, o un sistema Roblox bien hecho \u2014 escr\xedbeme. Se comunica en ingl\xe9s, island\xe9s y espa\xf1ol.',
+    btn_work:'Ver trabajo \u2192', btn_touch:'Ponerse en contacto', btn_msg:'Enviar mensaje \u2192',
+    lbl_working:'Trabajando en', cc_working:'Bot Discord personalizado \u2014 encargo de cliente',
+    cc_working_sub:'Moderaci\xf3n avanzada, sistema de econom\xeda y manejo de eventos en tiempo real desde cero.',
+    lbl_learning:'Aprendiendo', cc_learning:'Swift \u00a0\u00b7\u00a0 Executors e Injections de Roblox',
+    cc_learning_sub:'Desarrollo iOS e internos del motor Roblox \u2014 arquitectura de executors y mec\xe1nica de injection.',
+    lbl_comm:'Comisiones', cc_comm:'Abiertas \u2014 pero espera disponibilidad',
+    cc_comm_sub:'Gestionando trabajo activo. Contacta y responder\xe9 cuando haya un hueco disponible.',
+    footer_quote:'la existencia precede a la esencia',
+    about_p1:'<strong>Zelvyn</strong> — desarrolladora full stack, estudiante de medicina y Fundadora de Akyne Productions, de <strong>Islandia</strong>. Dos disciplinas, un hilo: encontrar orden en la complejidad.',
+    about_p2:'Como <strong>Fundadora de Akyne Productions</strong>, el trabajo abarca plataformas con usuarios reales, bots Discord y sistemas Roblox. Más de 11 proyectos entregados — la mayoría bajo NDA.',
+    about_p3:'Una <strong>existencialista</strong> comprometida — Sartre, Camus, Heidegger. La existencia precede a la esencia: nos definimos por la acción.',
+    founder_note:'Fundadora — Akyne Productions · akyne.pythonanywhere.com',
+    ai_med_n:'Medicina — MD', ai_med_d:'El cuerpo humano como el sistema más complejo jamás estudiado. Diagnóstico, precisión, pensamiento sistémico.',
+    ai_exi_n:'Existencialismo', ai_exi_d:'Sartre. Camus. Heidegger. Libertad radical, existencia auténtica.',
+    ai_ast_n:'Astronomía', ai_ast_d:'Cosmología del espacio profundo, mecánica orbital y la escala del universo.',
+    ai_poe_n:'Poesía', ai_poe_d:'Palabras ordenadas hasta que cargan más que su significado.',
+    ai_lng_n:'Idiomas', ai_lng_d:'Islandés (nativo) — Inglés — Español.',
+    ai_sw_n:'Software', ai_sw_d:'Web full stack, bots Discord, sistemas de juegos. Construido con intención.',
+    pc_badge:'Proyecto destacado — Akyne Productions',
+    pc1_name:'Varhama', pc1_desc:'Plataforma de productividad completa desde cero — vault, editor de notas, base de datos, IA y sincronización entre dispositivos.',
+    pc2_name:'Plataforma Akyne', pc2_desc:'Plataforma web de producción bajo Akyne Productions — construida, desplegada y mantenida de forma independiente.',
+    pc3_name:'Suite de Bots Discord', pc3_desc:'Múltiples bots desde cero — moderación, economía, arquitectura orientada a eventos e interacciones en tiempo real.',
+    pc4_name:'Sistemas Roblox', pc4_desc:'Mecánicas en LuaU — arquitectura servidor-cliente, UI, anti-exploit y bucles de juego para escala real.',
+    pc6_name:'Comisiones privadas', pc6_desc:'11+ proyectos — 8+ clientes. La mayoría bajo NDA. El historial es real.',
+    wm1_t:'Full Stack — <em>Literalmente</em>', wm1_d:'Frontend, backend, base de datos, despliegue, autenticación, APIs — el sistema completo gestionado por una desarrolladora.',
+    wm2_t:'Ya <em>entregado</em>', wm2_d:'Varhama está en vivo. Akyne está en vivo. Los bots Discord funcionan en servidores reales.',
+    wm3_t:'Pensamiento <em>multidisciplinar</em>', wm3_d:'Estudiar medicina mientras se construye software es una ventaja. El pensamiento sistémico aplica en todas partes.',
+    wm4_t:'Multilenguaje <em>nativa</em>', wm4_d:'12 lenguajes. La herramienta correcta para el problema correcto.',
+    wm5_t:'Mentalidad de <em>fundadora</em>', wm5_d:'Como fundadora de Akyne Productions, se construyen productos — no solo código.',
+    wm6_t:'Construido para <em>durar</em>', wm6_d:'El código que funciona una vez no es suficiente. Cada sistema está diseñado para durar.',
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = TRANSLATIONS[lang];
+  // update all tagged elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if(t[key] !== undefined) el.innerHTML = t[key];
+  });
+  // update mobile menu links too
+  document.querySelectorAll('.mob a').forEach(a => {
+    const key = a.dataset.i18n;
+    if(key && t[key]) a.textContent = t[key];
+  });
+  // update lang buttons
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang);
+  });
+  // update typing lines
+  typingLines = {
+    en: ['zelvyn.dev','Full Stack Developer','Founder \u2014 Akyne Productions','MD Student','Existentialist','Discord Bot Architect','Game Developer'],
+    is: ['zelvyn.dev','Full Stack \xferoandi','Stofnandi \u2014 Akyne Productions','L\xe6knan\xe9mi','Tilvistarsinnari','Discord Bot Smi\xf0ur','Leikjahnn\xed\xf0ur'],
+    es: ['zelvyn.dev','Desarrolladora Full Stack','Fundadora \u2014 Akyne Productions','Estudiante de Medicina','Existencialista','Arquitecta de Bots Discord','Desarrolladora de Juegos'],
+  }[lang];
+  // update otw in mobile menu
+  const mobOtw = document.querySelector('.mob .otw');
+  if(mobOtw) mobOtw.innerHTML = '<sp
