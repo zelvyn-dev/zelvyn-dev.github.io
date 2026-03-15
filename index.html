@@ -167,14 +167,14 @@ section{padding:120px 0;position:relative;}
 .btn-o:hover{border-color:var(--accent2);color:var(--accent2);}
 
 /* orbit / avatar */
-.orbit-wrap{position:absolute;right:0;top:50%;transform:translateY(-55%);width:420px;height:420px;pointer-events:none;}
+.orbit-wrap{position:absolute;right:-150px;top:55%;transform:translateY(-50%);width:500px;height:500px;pointer-events:none;}
 .o1,.o2{position:absolute;top:50%;left:50%;border-radius:50%;}
-.o1{width:420px;height:420px;margin:-210px 0 0 -210px;border:1px solid rgba(26,144,255,.07);animation:ospin 42s linear infinite;}
+.o1{width:500px;height:500px;margin:-250px 0 0 -250px;border:1px solid rgba(26,144,255,.07);animation:ospin 42s linear infinite;}
 .o1::before{content:'';position:absolute;width:7px;height:7px;background:var(--accent2);border-radius:50%;top:10px;left:50%;margin-left:-3.5px;box-shadow:0 0 12px var(--accent2);}
-.o2{width:280px;height:280px;margin:-140px 0 0 -140px;border:1px solid rgba(0,212,255,.05);animation:ospin 26s linear infinite reverse;}
+.o2{width:340px;height:340px;margin:-170px 0 0 -170px;border:1px solid rgba(0,212,255,.05);animation:ospin 26s linear infinite reverse;}
 .o2::before{content:'';position:absolute;width:4px;height:4px;background:var(--accent);border-radius:50%;bottom:14px;left:50%;margin-left:-2px;box-shadow:0 0 8px var(--accent);}
 @keyframes ospin{to{transform:rotate(360deg);}}
-.avatar{width:160px;height:160px;border-radius:50%;border:2px solid rgba(26,144,255,.4);object-fit:cover;object-position:center top;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);filter:grayscale(15%) brightness(.95);transition:filter .3s;box-shadow:0 0 40px rgba(0,150,255,.15);}
+.avatar{width:155px;height:155px;border-radius:50%;border:2px solid rgba(26,144,255,.3);object-fit:cover;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);filter:grayscale(20%) brightness(.9);transition:filter .3s;}
 .avatar:hover{filter:grayscale(0%) brightness(1);}
 
 /* ──────────────────────────────
@@ -851,14 +851,14 @@ footer span.hi{color:var(--accent2);}
       <div>
         <div class="contact-big" data-i18n="contact_big">Let us build<br><em>something</em>.</div>
         <p class="contact-p" data-i18n="contact_p">Open to commissions, collaborations, and conversations worth having. Whether you need a full stack application, a Discord bot that actually works, or a Roblox system built properly &mdash; reach out. Fluent in English, Icelandic, and Spanish.</p>
-        <a href="/cdn-cgi/l/email-protection#a5c4d7c6c0d0d6cbccd7d3c4cbc4e5c2c8c4ccc98bc6cac8" class="btn btn-p" data-i18n="btn_msg">Send a Message &rarr;</a>
+        <a href="mailto:arceusnirvana@gmail.com" class="btn btn-p" data-i18n="btn_msg">Send a Message &rarr;</a>
       </div>
       <div class="clinks">
         <div class="cl" onclick="copyEmail()" style="cursor:none;">
           <div class="cl-ico">@</div>
           <div class="cl-info">
             <div class="cl-lbl">Email</div>
-            <div class="cl-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="48293a2b2d3d3b26213a3e292629082f25292124662b2725">[email&#160;protected]</a></div>
+            <div class="cl-val">arceusnirvana@gmail.com</div>
           </div>
           <div class="cl-arr">&rarr;</div>
         </div>
@@ -895,7 +895,7 @@ footer span.hi{color:var(--accent2);}
 <!-- ═══════════════════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════════════════ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── LOADER ──
 const loaderTxts = ['Initializing...','Loading systems...','Mapping the cosmos...','Almost there...'];
 let lti = 0;
@@ -1282,4 +1282,12 @@ function setLang(lang) {
   }[lang];
   // update otw in mobile menu
   const mobOtw = document.querySelector('.mob .otw');
-  if(mobOtw) mobOtw.innerHTML = '<sp
+  if(mobOtw) mobOtw.innerHTML = '<span class="otw-dot"></span>' + t.otw;
+}
+
+// typing lines reference (overridden by setLang)
+let typingLines = ['zelvyn.dev','Full Stack Developer','Founder \u2014 Akyne Productions','MD Student','Existentialist','Discord Bot Architect','Game Developer'];
+
+</script>
+</body>
+</html>
